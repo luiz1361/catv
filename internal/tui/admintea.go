@@ -198,16 +198,16 @@ func (m *AdminModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tea.KeyMsg:
 		switch m.view {
-	case adminList:
-		return m.handleListView(msg)
-	case adminCreate:
-		return m.handleCreateView(msg)
-	case adminEdit:
-		return m.handleEditView(msg)
-	case adminConfirmDelete:
-		return m.handleDeleteConfirm(msg)
-	case adminConfirmBulkReset:
-		return m.handleBulkResetConfirm(msg)
+		case adminList:
+			return m.handleListView(msg)
+		case adminCreate:
+			return m.handleCreateView(msg)
+		case adminEdit:
+			return m.handleEditView(msg)
+		case adminConfirmDelete:
+			return m.handleDeleteConfirm(msg)
+		case adminConfirmBulkReset:
+			return m.handleBulkResetConfirm(msg)
 		}
 	}
 	return m, nil
