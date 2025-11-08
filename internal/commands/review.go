@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"catv/internal/store"
 	"catv/internal/tui"
 	"fmt"
 
@@ -33,26 +32,22 @@ var ReviewCmd = &cobra.Command{
 
 		// After review, update DB only for flashcards that were actually answered
 		for i, fc := range flashcards {
-			// Only update if user interacted with the card (answered correct/incorrect or provided revisitIn)
 			if model.FlashcardWasCorrect(i) && model.FlashcardRevisitIn(i) > 0 {
-				fc.NextReview = store.NextReviewDate(model.FlashcardRevisitIn(i))
-				err := Store.UpdateFlashcard(fc)
-				if err != nil {
+				fc.RevisitIn = model.FlashcardRevisitIn(i)
+				if err := Store.UpdateFlashcard(fc); err != nil {
 					tui.PrintError("DB update error:", err)
 				} else {
-					tui.PrintSuccess(fmt.Sprintf("Updated flashcard %d: next_review=%s", fc.ID, fc.NextReview.Format("2006-01-02")))
+					tui.PrintSuccess(fmt.Sprintf("Updated flashcard %d: revisitin=%d", fc.ID, fc.RevisitIn))
 				}
 			} else if !model.FlashcardWasCorrect(i) && model.FlashcardRevisitIn(i) > 0 {
-				// If explicitly marked incorrect, set next_review to tomorrow
-				fc.NextReview = store.NextReviewDate(1)
-				err := Store.UpdateFlashcard(fc)
-				if err != nil {
+				// Incorrect -> revisit sooner (e.g. tomorrow => 1)
+				fc.RevisitIn = 1
+				if err := Store.UpdateFlashcard(fc); err != nil {
 					tui.PrintError("DB update error:", err)
 				} else {
-					tui.PrintSuccess(fmt.Sprintf("Marked flashcard %d incorrect: next_review set to tomorrow", fc.ID))
+					tui.PrintSuccess(fmt.Sprintf("Marked flashcard %d incorrect: revisitin set to 1", fc.ID))
 				}
 			}
-			// If neither correct nor incorrect was set, do not update next_review
 		}
 	},
 }

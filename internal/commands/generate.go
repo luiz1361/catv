@@ -5,7 +5,6 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"time"
 
 	"catv/internal/ollama"
 	"catv/internal/store"
@@ -122,10 +121,10 @@ Markdown:
 				count := 0
 				for _, qa := range qas {
 					fc := store.Flashcard{
-						File:       absPath,
-						Question:   qa["question"],
-						Answer:     qa["answer"],
-						NextReview: time.Now(),
+						File:      absPath,
+						Question:  qa["question"],
+						Answer:    qa["answer"],
+						RevisitIn: 0, // Due immediately
 					}
 					err := Store.InsertFlashcard(fc)
 					if err != nil {

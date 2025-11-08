@@ -57,4 +57,5 @@ func init() {
 	RootCmd.PersistentFlags().StringVar(&Model, "model", "llama3.1", "Ollama model to use for flashcard generation")
 	RootCmd.AddCommand(GenerateCmd)
 	RootCmd.AddCommand(ReviewCmd)
+	RootCmd.AddCommand(AdminCmd)
 }

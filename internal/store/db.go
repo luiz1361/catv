@@ -22,7 +22,7 @@ func NewStore(dbName string) (*Store, error) {
 			  file TEXT,
 			  question TEXT,
 			  answer TEXT,
-			  next_review DATE
+			  revisitin INTEGER DEFAULT 0
 		  );`
 	_, err = db.Exec(createTable)
 	if err != nil {
@@ -33,7 +33,7 @@ func NewStore(dbName string) (*Store, error) {
 
 // GetFlashcardsForReview returns all flashcards that are due for review
 func (s *Store) GetFlashcardsForReview() ([]Flashcard, error) {
-	rows, err := s.DB.Query("SELECT id, question, answer FROM flashcards WHERE next_review <= date('now') ORDER BY next_review ASC")
+	rows, err := s.DB.Query("SELECT id, question, answer, revisitin FROM flashcards WHERE revisitin <= 0 ORDER BY id ASC")
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +42,7 @@ func (s *Store) GetFlashcardsForReview() ([]Flashcard, error) {
 	var flashcards []Flashcard
 	for rows.Next() {
 		var fc Flashcard
-		err := rows.Scan(&fc.ID, &fc.Question, &fc.Answer)
+		err := rows.Scan(&fc.ID, &fc.Question, &fc.Answer, &fc.RevisitIn)
 		if err != nil {
 			return nil, err
 		}
@@ -51,9 +51,39 @@ func (s *Store) GetFlashcardsForReview() ([]Flashcard, error) {
 	return flashcards, nil
 }
 
-// UpdateFlashcard updates a flashcard's complexity and next review date
+// GetAllFlashcards returns all flashcards ordered by revisitin ascending
+func (s *Store) GetAllFlashcards() ([]Flashcard, error) {
+	rows, err := s.DB.Query("SELECT id, file, question, answer, revisitin FROM flashcards ORDER BY revisitin ASC, id ASC")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var flashcards []Flashcard
+	for rows.Next() {
+		var fc Flashcard
+		if err := rows.Scan(&fc.ID, &fc.File, &fc.Question, &fc.Answer, &fc.RevisitIn); err != nil {
+			return nil, err
+		}
+		flashcards = append(flashcards, fc)
+	}
+	return flashcards, nil
+}
+
+// DeleteFlashcard deletes a flashcard by id
+func (s *Store) DeleteFlashcard(id int) error {
+	_, err := s.DB.Exec("DELETE FROM flashcards WHERE id=?", id)
+	return err
+}
+
+// UpdateFlashcardFull updates all editable fields of a flashcard
+func (s *Store) UpdateFlashcardFull(fc Flashcard) error {
+	_, err := s.DB.Exec("UPDATE flashcards SET file=?, question=?, answer=?, revisitin=? WHERE id=?", fc.File, fc.Question, fc.Answer, fc.RevisitIn, fc.ID)
+	return err
+}
+
+// UpdateFlashcard updates a flashcard's revisitin date
 func (s *Store) UpdateFlashcard(fc Flashcard) error {
-	_, err := s.DB.Exec("UPDATE flashcards SET next_review=? WHERE id=?", fc.NextReview.Format("2006-01-02"), fc.ID)
+	_, err := s.DB.Exec("UPDATE flashcards SET revisitin=? WHERE id=?", fc.RevisitIn, fc.ID)
 	return err
 }
 
@@ -70,7 +100,7 @@ func (s *Store) IsFileProcessed(filePath string) (bool, error) {
 
 // InsertFlashcard inserts a new flashcard into the database
 func (s *Store) InsertFlashcard(fc Flashcard) error {
-	_, err := s.DB.Exec("INSERT INTO flashcards (file, question, answer, next_review) VALUES (?, ?, ?, ?)", fc.File, fc.Question, fc.Answer, fc.NextReview.Format("2006-01-02"))
+	_, err := s.DB.Exec("INSERT INTO flashcards (file, question, answer, revisitin) VALUES (?, ?, ?, ?)", fc.File, fc.Question, fc.Answer, fc.RevisitIn)
 	return err
 }
 

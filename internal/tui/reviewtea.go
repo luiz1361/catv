@@ -75,19 +75,19 @@ func (m *ReviewModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case viewRevisitIn:
 			if msg.String() == "1" {
 				m.revisitIn[m.current] = 1
-				m.resultMsg = fmt.Sprintf("Revisit in 1 day (%s)", store.NextReviewDate(1).Format("2006-01-02"))
+				m.resultMsg = "Revisit in 1 day"
 				m.nextCard()
 			} else if msg.String() == "3" {
 				m.revisitIn[m.current] = 3
-				m.resultMsg = fmt.Sprintf("Revisit in 3 days (%s)", store.NextReviewDate(3).Format("2006-01-02"))
+				m.resultMsg = "Revisit in 3 days"
 				m.nextCard()
 			} else if msg.String() == "7" {
 				m.revisitIn[m.current] = 7
-				m.resultMsg = fmt.Sprintf("Revisit in 7 days (%s)", store.NextReviewDate(7).Format("2006-01-02"))
+				m.resultMsg = "Revisit in 7 days"
 				m.nextCard()
 			} else if msg.String() == "9" {
 				m.revisitIn[m.current] = 9
-				m.resultMsg = fmt.Sprintf("Revisit in 9 days (%s)", store.NextReviewDate(9).Format("2006-01-02"))
+				m.resultMsg = "Revisit in 9 days"
 				m.nextCard()
 			}
 		case viewDone:
