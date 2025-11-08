@@ -26,13 +26,8 @@ jobs:
       - name: Build binary
         run: |
           mkdir -p dist
-          if [[ "${{ matrix.arch }}" == "amd64" ]]; then
-            CC=gcc CGO_ENABLED=1 GOOS=linux GOARCH=amd64 \
-            go build -o dist/catv-linux-amd64
-          else
-            CGO_ENABLED=0 GOOS=linux GOARCH=${{ matrix.arch }} \
-            go build -o dist/catv-linux-${{ matrix.arch }}
-          fi
+          CGO_ENABLED=1 GOOS=linux GOARCH=${{ matrix.arch }} \
+          go build -o dist/catv-linux-${{ matrix.arch }}
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -55,13 +50,8 @@ jobs:
       - name: Build binary
         run: |
           mkdir -p dist
-          if [[ "${{ matrix.arch }}" == "amd64" ]]; then
-            CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 \
-            go build -o dist/catv-darwin-amd64
-          else
-            CGO_ENABLED=0 GOOS=darwin GOARCH=${{ matrix.arch }} \
-            go build -o dist/catv-darwin-${{ matrix.arch }}
-          fi
+          CGO_ENABLED=1 GOOS=darwin GOARCH=${{ matrix.arch }} \
+          go build -o dist/catv-darwin-${{ matrix.arch }}
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
