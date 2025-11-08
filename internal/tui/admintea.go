@@ -144,9 +144,29 @@ func (m *AdminModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, nil
 			case "r":
 				m.reload()
+				m.statusMsg = "Table refreshed"
+				m.errMsg = ""
 				return m, nil
 			case "?":
 				m.view = adminHelp
+				return m, nil
+			case "pgdown", "pagedown":
+				// Page down - jump 10 rows down
+				newPos := m.table.Cursor() + 10
+				if newPos >= len(m.flashcards) {
+					newPos = len(m.flashcards) - 1
+				}
+				m.table.SetCursor(newPos)
+				m.selected = newPos
+				return m, nil
+			case "pgup", "pageup":
+				// Page up - jump 10 rows up
+				newPos := m.table.Cursor() - 10
+				if newPos < 0 {
+					newPos = 0
+				}
+				m.table.SetCursor(newPos)
+				m.selected = newPos
 				return m, nil
 			default:
 				// Let table handle navigation
@@ -216,7 +236,7 @@ func (m *AdminModel) View() string {
 		Foreground(lipgloss.Color("240")).
 		Padding(0, 1)
 
-	helpBar := helpStyle.Render("[↑/↓] navigate  [c] create  [e] edit  [d] delete  [r] reload  [?] help  [q] quit")
+	helpBar := helpStyle.Render("[↑/↓] navigate  [PgUp/PgDn] page  [c] create  [e] edit  [d] delete  [r] reload  [?] help  [q] quit")
 
 	if m.errMsg != "" {
 		helpBar += "\n" + errorStyle.Render("✗ "+m.errMsg)
@@ -263,8 +283,8 @@ func (m *AdminModel) View() string {
 
 		helpText := helpStyle.Render("[tab] next field  [enter] save  [esc] cancel")
 
-		return fmt.Sprintf("%s\n\n%s\n%s\n\n%s\n%s\n\n%s\n%s\n\n%s\n\n%s",
-			qLabel, qInput, aLabel, aInput, rLabel, rInput, helpText, helpBar)
+		return fmt.Sprintf("%s\n%s\n\n%s\n%s\n\n%s\n%s\n\n%s\n\n",
+			qLabel, qInput, aLabel, aInput, rLabel, rInput, helpText)
 
 	case adminEdit:
 		title := titleStyle.Render(fmt.Sprintf("(ID %d)", m.flashcards[m.selected].ID))
@@ -299,29 +319,30 @@ func (m *AdminModel) View() string {
 			title, qLabel, qInput, aLabel, aInput, rLabel, rInput, helpText)
 
 	case adminConfirmDelete:
-		title := titleStyle.Render("🗑️  Delete Confirmation")
 		warning := errorStyle.Render(fmt.Sprintf("Delete Flashcard ID %d?", m.flashcards[m.selected].ID))
 		options := helpStyle.Render("[y] yes  [n] no  [esc] cancel")
-		return fmt.Sprintf("%s\n\n%s\n\n%s\n\n%s", title, warning, options, helpBar)
+		return fmt.Sprintf("%s\n\n%s\n\n\n\n", warning, options)
 
 	case adminHelp:
 		title := titleStyle.Render("❓ Help")
 		helpText := `Navigation:
-  ↑/k      Move up
-  ↓/j      Move down
+  ↑/k         Move up
+  ↓/j         Move down
+  PgUp        Jump 10 rows up
+  PgDn        Jump 10 rows down
   
 Actions:
-  c        Create new flashcard
-  e        Edit selected flashcard
-  d        Delete selected flashcard
-  r        Reload flashcards
-  ?        Show this help
-  q        Quit
+  c           Create new flashcard
+  e           Edit selected flashcard
+  d           Delete selected flashcard
+  r           Reload flashcards from database
+  ?           Show this help
+  q           Quit
   
 In edit/create mode:
-  tab      Next field
-  enter    Save changes
-  esc      Cancel`
+  tab         Next field
+  enter       Save changes
+  esc         Cancel`
 
 		return fmt.Sprintf("%s\n\n%s\n\n%s\n\n%s", title, helpText, helpStyle.Render("[esc] back"), helpBar)
 	}
@@ -436,6 +457,20 @@ func (m *AdminModel) reload() {
 		return
 	}
 	m.flashcards = list
+
+	// Update table with new data
+	rows := makeTableRows(m.flashcards)
+	m.table.SetRows(rows)
+
+	// Adjust cursor if needed
+	if m.selected >= len(m.flashcards) && len(m.flashcards) > 0 {
+		m.selected = len(m.flashcards) - 1
+		m.table.SetCursor(m.selected)
+	}
+	if m.selected < 0 {
+		m.selected = 0
+		m.table.SetCursor(0)
+	}
 }
 
 // cycleFocus switches focus Question -> Answer -> Revisit -> Question

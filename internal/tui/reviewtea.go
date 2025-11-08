@@ -167,7 +167,7 @@ func (m *ReviewModel) View() string {
 	case viewRevisitIn:
 		content = fmt.Sprintf("%s\n\n%s\n%s", infoStyle.Render("Revisit in (days): [1]  [3]  [7]  [9]"), m.resultMsg, bottomBar)
 	case viewDone:
-		content = fmt.Sprintf("%s\n%s", successStyle.Render("Review complete! Press q to quit."), bottomBar)
+		content = fmt.Sprintf("%s\n%s", successStyle.Render("Review complete! Press q to quit.\n"), bottomBar)
 	}
 	return frame.Render(content) + "\n" + exitMsg
 }

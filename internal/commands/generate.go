@@ -47,7 +47,7 @@ func (m spinnerModel) View() string {
 
 var GenerateCmd = &cobra.Command{
 	Use:   "generate",
-	Short: "Generate flashcards from markdown files",
+	Short: "Generate flashcards from markdown",
 	Run: func(cmd *cobra.Command, args []string) {
 		path, _ := cmd.Flags().GetString("path")
 		if path == "" {

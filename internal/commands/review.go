@@ -10,7 +10,7 @@ import (
 
 var ReviewCmd = &cobra.Command{
 	Use:   "review",
-	Short: "Review flashcards that are due",
+	Short: "Review flashcards",
 	Run: func(cmd *cobra.Command, args []string) {
 		flashcards, err := Store.GetFlashcardsForReview()
 		if err != nil {
