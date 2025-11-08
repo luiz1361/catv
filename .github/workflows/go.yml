@@ -25,8 +25,12 @@ jobs:
 
     - name: Build
       run: |
-        # Enable CGO for go-sqlite3 compatibility
-        CGO_ENABLED=1 go build -v ./...
+        # Enable CGO for go-sqlite3 compatibility and set CC=gcc for Linux
+        if [[ "$(uname -s)" == "Linux" ]]; then
+          CC=gcc CGO_ENABLED=1 go build -v ./...
+        else
+          CGO_ENABLED=1 go build -v ./...
+        fi
 
     - name: Test
       run: go test -v ./...
