@@ -37,10 +37,15 @@ Designed for simplicity, privacy, and security. Runs entirely offline and stores
   curl -fsSL https://github.com/luiz1361/catv/releases/latest/download/install.sh | bash
   ```
 
-4. **Generate flashcards from your markdown notes:**
-  ```bash
-  ./catv generate --path <path-to-your-markdown-files>
-  ```
+4. **Generate flashcards from your markdown notes**
+
+```bash
+# From a directory (recursive)
+./catv generate --path /path/to/notes
+
+# From a single file
+./catv generate --path /path/to/notes/file.md
+```
 
 5. **Review your flashcards:**
   ```bash
@@ -48,7 +53,6 @@ Designed for simplicity, privacy, and security. Runs entirely offline and stores
   ```
 
 That's it! No extra configuration needed. It will use the local Ollama API and store flashcards in a SQLite database.
-
 
 
 ## Features
