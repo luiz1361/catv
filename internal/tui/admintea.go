@@ -142,7 +142,6 @@ func (m *AdminModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m *AdminModel) View() string {
-	header := lipgloss.NewStyle().Bold(true).Render("Admin Flashcards Manager")
 	helpBar := lipgloss.NewStyle().Faint(true).Render("[j/k] navigate  [c] create  [e] edit  [d] delete  [r] reload  [?] help  [q] quit")
 
 	if m.errMsg != "" {
@@ -154,7 +153,6 @@ func (m *AdminModel) View() string {
 	switch m.view {
 	case adminList:
 		var b strings.Builder
-		b.WriteString(header + "\n\n")
 		if len(m.flashcards) == 0 {
 			b.WriteString("No flashcards. Press c to create.\n")
 		} else {
@@ -171,13 +169,13 @@ func (m *AdminModel) View() string {
 		b.WriteString("\n" + helpBar)
 		return b.String()
 	case adminCreate:
-		return fmt.Sprintf("%s\n\nCreate Flashcard\nQuestion: %s\nAnswer: %s\nRevisit (days): %s\n[enter] save  [esc] cancel\n\n%s", header, m.questionInput.View(), m.answerInput.View(), m.revisitInput.View(), helpBar)
+		return fmt.Sprintf("Create Flashcard\nQuestion: %s\nAnswer: %s\nRevisit (days): %s\n[enter] save  [esc] cancel\n\n%s", m.questionInput.View(), m.answerInput.View(), m.revisitInput.View(), helpBar)
 	case adminEdit:
-		return fmt.Sprintf("%s\n\nEdit Flashcard (ID %d)\nQuestion: %s\nAnswer: %s\nRevisit (days): %s\n[enter] update  [esc] cancel\n\n%s", header, m.flashcards[m.selected].ID, m.questionInput.View(), m.answerInput.View(), m.revisitInput.View(), helpBar)
+		return fmt.Sprintf("Edit Flashcard (ID %d)\nQuestion: %s\nAnswer: %s\nRevisit (days): %s\n[enter] update  [esc] cancel\n\n%s", m.flashcards[m.selected].ID, m.questionInput.View(), m.answerInput.View(), m.revisitInput.View(), helpBar)
 	case adminConfirmDelete:
-		return fmt.Sprintf("%s\n\nDelete Flashcard ID %d? [y/n]\n\n%s", header, m.flashcards[m.selected].ID, helpBar)
+		return fmt.Sprintf("Delete Flashcard ID %d? [y/n]\n\n%s", m.flashcards[m.selected].ID, helpBar)
 	case adminHelp:
-		return fmt.Sprintf("%s\n\nHelp\nUse j/k to move, c create, e edit, d delete, r reload.\nesc to return.\n\n%s", header, helpBar)
+		return fmt.Sprintf("Help\nUse j/k to move, c create, e edit, d delete, r reload.\nesc to return.\n\n%s", helpBar)
 	}
 	return ""
 }
