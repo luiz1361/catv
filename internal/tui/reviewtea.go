@@ -133,6 +133,10 @@ func (m *ReviewModel) View() string {
 	}
 	total := len(m.flashcards)
 	current := m.current + 1
+	// If review is done, show total instead of current+1
+	if m.view == viewDone {
+		current = total
+	}
 	width := 60
 	height := 10
 	frame := lipgloss.NewStyle().Width(width).Height(height).Align(lipgloss.Center, lipgloss.Center).Border(lipgloss.RoundedBorder()).BorderForeground(lipgloss.Color("63"))
