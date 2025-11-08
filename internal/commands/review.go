@@ -33,16 +33,16 @@ var ReviewCmd = &cobra.Command{
 
 		// After review, update DB only for flashcards that were actually answered
 		for i, fc := range flashcards {
-			// Only update if user interacted with the card (answered correct/incorrect or provided difficulty)
-			if model.FlashcardWasCorrect(i) && model.FlashcardDifficulty(i) > 0 {
-				fc.NextReview = store.NextReviewDate(model.FlashcardDifficulty(i))
+			// Only update if user interacted with the card (answered correct/incorrect or provided revisitIn)
+			if model.FlashcardWasCorrect(i) && model.FlashcardRevisitIn(i) > 0 {
+				fc.NextReview = store.NextReviewDate(model.FlashcardRevisitIn(i))
 				err := Store.UpdateFlashcard(fc)
 				if err != nil {
 					tui.PrintError("DB update error:", err)
 				} else {
 					tui.PrintSuccess(fmt.Sprintf("Updated flashcard %d: next_review=%s", fc.ID, fc.NextReview.Format("2006-01-02")))
 				}
-			} else if !model.FlashcardWasCorrect(i) && model.FlashcardDifficulty(i) > 0 {
+			} else if !model.FlashcardWasCorrect(i) && model.FlashcardRevisitIn(i) > 0 {
 				// If explicitly marked incorrect, set next_review to tomorrow
 				fc.NextReview = store.NextReviewDate(1)
 				err := Store.UpdateFlashcard(fc)

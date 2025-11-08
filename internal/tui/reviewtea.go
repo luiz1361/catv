@@ -9,14 +9,14 @@ import (
 )
 
 // ReviewModel manages the state for the review session
-// Views: question, answer, correct/incorrect, difficulty, done
+// Views: question, answer, correct/incorrect, revisitIn, done
 
 type viewState int
 
 const (
 	viewQuestion viewState = iota
 	viewAnswer
-	viewDifficulty
+	viewRevisitIn
 	viewDone
 )
 
@@ -34,7 +34,7 @@ type ReviewModel struct {
 	resultMsg  string
 	quitting   bool
 	correct    []bool
-	difficulty []int
+	revisitIn  []int
 }
 
 func NewReviewModel(flashcards []store.Flashcard) *ReviewModel {
@@ -43,7 +43,7 @@ func NewReviewModel(flashcards []store.Flashcard) *ReviewModel {
 		current:    0,
 		view:       viewQuestion,
 		correct:    make([]bool, len(flashcards)),
-		difficulty: make([]int, len(flashcards)),
+		revisitIn:  make([]int, len(flashcards)),
 	}
 }
 
@@ -66,32 +66,28 @@ func (m *ReviewModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case viewAnswer:
 			if msg.String() == "c" {
 				m.correct[m.current] = true
-				m.view = viewDifficulty
+				m.view = viewRevisitIn
 			} else if msg.String() == "i" {
 				m.correct[m.current] = false
 				m.resultMsg = "Marked incorrect. Card will not be scheduled for repetition."
 				m.nextCard()
 			}
-		case viewDifficulty:
+		case viewRevisitIn:
 			if msg.String() == "1" {
-				m.difficulty[m.current] = 1
+				m.revisitIn[m.current] = 1
 				m.resultMsg = fmt.Sprintf("Revisit in 1 day (%s)", store.NextReviewDate(1).Format("2006-01-02"))
 				m.nextCard()
 			} else if msg.String() == "3" {
-				m.difficulty[m.current] = 3
+				m.revisitIn[m.current] = 3
 				m.resultMsg = fmt.Sprintf("Revisit in 3 days (%s)", store.NextReviewDate(3).Format("2006-01-02"))
 				m.nextCard()
 			} else if msg.String() == "7" {
-				m.difficulty[m.current] = 7
+				m.revisitIn[m.current] = 7
 				m.resultMsg = fmt.Sprintf("Revisit in 7 days (%s)", store.NextReviewDate(7).Format("2006-01-02"))
 				m.nextCard()
-			} else if msg.String() == "14" {
-				m.difficulty[m.current] = 14
-				m.resultMsg = fmt.Sprintf("Revisit in 14 days (%s)", store.NextReviewDate(14).Format("2006-01-02"))
-				m.nextCard()
-			} else if msg.String() == "30" {
-				m.difficulty[m.current] = 30
-				m.resultMsg = fmt.Sprintf("Revisit in 30 days (%s)", store.NextReviewDate(30).Format("2006-01-02"))
+			} else if msg.String() == "9" {
+				m.revisitIn[m.current] = 9
+				m.resultMsg = fmt.Sprintf("Revisit in 9 days (%s)", store.NextReviewDate(9).Format("2006-01-02"))
 				m.nextCard()
 			}
 		case viewDone:
@@ -124,11 +120,11 @@ func (m *ReviewModel) FlashcardWasCorrect(idx int) bool {
 	return m.correct[idx]
 }
 
-func (m *ReviewModel) FlashcardDifficulty(idx int) int {
-	if idx < 0 || idx >= len(m.difficulty) {
+func (m *ReviewModel) FlashcardRevisitIn(idx int) int {
+	if idx < 0 || idx >= len(m.revisitIn) {
 		return 0
 	}
-	return m.difficulty[idx]
+	return m.revisitIn[idx]
 }
 
 func (m *ReviewModel) View() string {
@@ -168,7 +164,7 @@ func (m *ReviewModel) View() string {
 		content = fmt.Sprintf("%s\n\n%s\n\n%s\n\n%s", questionStyle.Render("Question:"), m.flashcards[m.current].Question, infoStyle.Render("Press Enter to reveal answer..."), bottomBar)
 	case viewAnswer:
 		content = fmt.Sprintf("%s\n\n%s\n\n%s\n%s", answerStyle.Render("Answer:"), m.flashcards[m.current].Answer, infoStyle.Render("Was your answer correct? [c]orrect / [i]ncorrect\n"), bottomBar)
-	case viewDifficulty:
+	case viewRevisitIn:
 		content = fmt.Sprintf("%s\n\n%s\n%s", infoStyle.Render("Revisit in (days): [1]  [3]  [7]  [9]"), m.resultMsg, bottomBar)
 	case viewDone:
 		content = fmt.Sprintf("%s\n%s", successStyle.Render("Review complete! Press q to quit."), bottomBar)
