@@ -1,6 +1,4 @@
 
-# CATV - Cards Against The Void
-
 <p align="center">
 <img src="logo/logo-xs.png" alt="CATV Logo" width="120"/>
 </p>
