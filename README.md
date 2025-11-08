@@ -83,7 +83,7 @@ No, Ollama runs locally.
 
 <details>
 <summary>Where are flashcards stored?</summary>
-In a local SQLite database.
+Flashcards are stored in a local SQLite database file located at <code>~/.catv/flashcards.db</code>.
 </details>
 
 <details>

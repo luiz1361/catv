@@ -17,9 +17,19 @@ var RootCmd = &cobra.Command{
 	Use:   "catv",
 	Short: "Ollama-powered spaced repetition flashcards CLI",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		dbName := "flashcards.db"
 		var err error
-		Store, err = store.NewStore(dbName)
+		homeDir, err := os.UserHomeDir()
+		if err != nil {
+			tui.PrintError("Could not determine home directory:", err)
+			os.Exit(1)
+		}
+		catvDir := homeDir + string(os.PathSeparator) + ".catv"
+		if err := os.MkdirAll(catvDir, 0700); err != nil {
+			tui.PrintError("Could not create .catv directory:", err)
+			os.Exit(1)
+		}
+		dbPath := catvDir + string(os.PathSeparator) + "flashcards.db"
+		Store, err = store.NewStore(dbPath)
 		if err != nil {
 			tui.PrintError("DB error:", err)
 			os.Exit(1)
