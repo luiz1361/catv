@@ -3,3 +3,6 @@ flashcards.db
 
 # Ignore macOS Finder metadata files
 .DS_Store
+
+# Ignore the binary
+catv
