@@ -1,4 +1,3 @@
-
 <p align="center">
 <img src="logo/logo-xs.png" alt="CATV Logo" width="120"/>
 </p>
@@ -32,9 +31,10 @@ Designed for simplicity, privacy, and security, working entirely offline and sto
   ollama pull llama3.1
   ```
 
-3. **Download and set up:**
+3. **Download and set up(for MacBook M2, adjust as needed):**
   ```bash
-  curl -L https://github.com/luiz1361/catv/releases/latest/download/catv-darwin-arm64 -o catv && chmod +x catv
+  curl -L https://github.com/luiz1361/catv/releases/latest/download/catv-darwin-arm64 -o catv
+  chmod +x catv && xattr -dr com.apple.quarantine catv
   ```
 
 4. **Generate flashcards from your markdown notes:**
@@ -90,6 +90,11 @@ Yes, just point CATV to your folder of markdown notes.
 <details>
 <summary>How do I update the Ollama model?</summary>
 Use `ollama pull <model>` to update or change models.
+</details>
+
+<details>
+<summary>How do I change the default Ollama model?</summary>
+You can use the `--model` flag to specify the Ollama model for flashcard generation.
 </details>
 
 <details>

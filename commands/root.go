@@ -4,27 +4,22 @@ import (
 	"fmt"
 	"os"
 
-	"catv/config"
 	"catv/store"
 	"catv/tui"
 
 	"github.com/spf13/cobra"
 )
 
-var Cfg *config.Config
 var Store *store.Store
+var Model string
 
 var RootCmd = &cobra.Command{
 	Use:   "catv",
 	Short: "Ollama-powered spaced repetition flashcards CLI",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		dbName := "flashcards.db"
 		var err error
-		Cfg, err = config.LoadConfig()
-		if err != nil {
-			fmt.Println("Error loading config:", err)
-			os.Exit(1)
-		}
-		Store, err = store.NewStore(Cfg.Database.Name)
+		Store, err = store.NewStore(dbName)
 		if err != nil {
 			tui.PrintError("DB error:", err)
 			os.Exit(1)
@@ -49,6 +44,7 @@ func Execute() {
 }
 
 func init() {
+	RootCmd.PersistentFlags().StringVar(&Model, "model", "llama3.1", "Ollama model to use for flashcard generation")
 	RootCmd.AddCommand(GenerateCmd)
 	RootCmd.AddCommand(ReviewCmd)
 }

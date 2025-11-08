@@ -56,10 +56,12 @@ var GenerateCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		// Print info about model, DB, and API target
-		tui.PrintInfo(fmt.Sprintf("Model: %s", Cfg.Ollama.Model))
-		tui.PrintInfo(fmt.Sprintf("Database: %s", Cfg.Database.Name))
-		tui.PrintInfo(fmt.Sprintf("API Target: %s", Cfg.Ollama.URL))
+		model := Model
+		dbName := "flashcards.db"
+		ollamaURL := "http://localhost:11434/api/generate"
+		tui.PrintInfo(fmt.Sprintf("Model: %s", model))
+		tui.PrintInfo(fmt.Sprintf("Database: %s", dbName))
+		tui.PrintInfo(fmt.Sprintf("API Target: %s", ollamaURL))
 
 		files, err := getMarkdownFiles(path)
 		if err != nil {
@@ -104,7 +106,7 @@ Markdown:
 
 			doneChan := make(chan string)
 			go func() {
-				resp, err := ollama.GenerateQA(Cfg.Ollama.Model, Cfg.Ollama.URL, prompt)
+				resp, err := ollama.GenerateQA(model, ollamaURL, prompt)
 				if err != nil {
 					doneChan <- fmt.Sprintf("Ollama error: %v", err)
 					return
