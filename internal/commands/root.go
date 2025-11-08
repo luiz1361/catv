@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"catv/store"
-	"catv/tui"
+	"catv/internal/store"
+	"catv/internal/tui"
 
 	"github.com/spf13/cobra"
 )

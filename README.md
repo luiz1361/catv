@@ -39,13 +39,13 @@ Designed for simplicity, privacy, and security. Runs entirely offline and stores
 
 4. **Generate flashcards from your markdown notes**
 
-```bash
-# From a directory (recursive)
-./catv generate --path /path/to/notes
+  ```bash
+  # From a directory (recursive)
+  ./catv generate --path /path/to/notes
 
-# From a single file
-./catv generate --path /path/to/notes/file.md
-```
+  # From a single file
+  ./catv generate --path /path/to/notes/file.md
+  ```
 
 5. **Review your flashcards:**
   ```bash

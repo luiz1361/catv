@@ -28,6 +28,7 @@ jobs:
           go-version: '1.24'
       - name: Build binary
         run: |
+          cd cmd/catv
           mkdir -p dist
           if [[ "${{ matrix.arch }}" == "arm64" ]]; then
             CC=aarch64-linux-gnu-gcc CGO_ENABLED=1 GOOS=linux GOARCH=arm64 \
@@ -40,7 +41,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: catv-linux-${{ matrix.arch }}
-          path: dist/catv-linux-${{ matrix.arch }}
+          path: cmd/catv/dist/catv-linux-${{ matrix.arch }}
 
   build-darwin:
     name: Build binaries (Darwin)
@@ -57,6 +58,7 @@ jobs:
           go-version: '1.24'
       - name: Build binary
         run: |
+          cd cmd/catv
           mkdir -p dist
           CGO_ENABLED=1 GOOS=darwin GOARCH=${{ matrix.arch }} \
           go build -o dist/catv-darwin-${{ matrix.arch }}
@@ -64,7 +66,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: catv-darwin-${{ matrix.arch }}
-          path: dist/catv-darwin-${{ matrix.arch }}
+          path: cmd/catv/dist/catv-darwin-${{ matrix.arch }}
 
 
   release:
@@ -77,7 +79,7 @@ jobs:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          path: dist
+          path: cmd/catv/dist
       - name: Generate version tag
         id: tag
         run: |
@@ -92,7 +94,7 @@ jobs:
           body: |
             Automated release built from push to `main`.
           files: |
-            dist/**/*
+            cmd/catv/dist/**/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # --- Update 'latest' tag
@@ -117,7 +119,7 @@ jobs:
           name: "Latest"
           body: "This is the latest automatically built release."
           files: |
-            dist/**/*
+            cmd/catv/dist/**/*
           prerelease: false
           fail_on_unmatched_files: false
         env:

@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 	"time"
 
-	"catv/ollama"
-	"catv/store"
-	"catv/tui"
+	"catv/internal/ollama"
+	"catv/internal/store"
+	"catv/internal/tui"
 
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"

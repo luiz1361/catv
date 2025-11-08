@@ -1,8 +1,8 @@
 package commands
 
 import (
-	"catv/store"
-	"catv/tui"
+	"catv/internal/store"
+	"catv/internal/tui"
 	"fmt"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -56,3 +56,5 @@ var ReviewCmd = &cobra.Command{
 		}
 	},
 }
+
+// ...existing code...

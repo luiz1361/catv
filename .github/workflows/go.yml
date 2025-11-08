@@ -25,6 +25,7 @@ jobs:
 
     - name: Build
       run: |
+        cd cmd/catv
         # Enable CGO for go-sqlite3 compatibility and set CC=gcc for Linux
         if [[ "$(uname -s)" == "Linux" ]]; then
           CC=gcc CGO_ENABLED=1 go build -v ./...
@@ -33,4 +34,4 @@ jobs:
         fi
 
     - name: Test
-      run: go test -v ./...
+      run: cd cmd/catv && go test -v ./...
