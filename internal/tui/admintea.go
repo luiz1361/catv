@@ -21,6 +21,7 @@ const (
 	adminCreate
 	adminEdit
 	adminConfirmDelete
+	adminConfirmBulkReset
 	adminHelp
 )
 
@@ -142,6 +143,12 @@ func (m *AdminModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.selected = m.table.Cursor()
 				m.view = adminConfirmDelete
 				return m, nil
+			case "b":
+				if len(m.flashcards) == 0 {
+					break
+				}
+				m.view = adminConfirmBulkReset
+				return m, nil
 			case "r":
 				m.reload()
 				m.statusMsg = "Table refreshed"
@@ -210,6 +217,14 @@ func (m *AdminModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if key == "n" || key == "esc" {
 				m.view = adminList
 			}
+		case adminConfirmBulkReset:
+			if key == "y" {
+				m.bulkResetRevisitIn()
+				return m, nil
+			}
+			if key == "n" || key == "esc" {
+				m.view = adminList
+			}
 		case adminHelp:
 			if key == "esc" {
 				m.view = adminList
@@ -236,7 +251,7 @@ func (m *AdminModel) View() string {
 		Foreground(lipgloss.Color("240")).
 		Padding(0, 1)
 
-	helpBar := helpStyle.Render("[↑/↓] navigate  [PgUp/PgDn] page  [c] create  [e] edit  [d] delete  [r] reload  [?] help  [q] quit")
+	helpBar := helpStyle.Render("[↑/↓] navigate  [PgUp/PgDn] page  [c] create  [e] edit  [d] delete  [b] bulk reset  [r] reload  [?] help  [q] quit")
 
 	if m.errMsg != "" {
 		helpBar += "\n" + errorStyle.Render("✗ "+m.errMsg)
@@ -323,6 +338,13 @@ func (m *AdminModel) View() string {
 		options := helpStyle.Render("[y] yes  [n] no  [esc] cancel")
 		return fmt.Sprintf("%s\n\n%s\n\n\n\n", warning, options)
 
+	case adminConfirmBulkReset:
+		title := titleStyle.Render("⚡ Bulk Reset RevisitIn")
+		warning := errorStyle.Render(fmt.Sprintf("Set RevisitIn to 0 for ALL %d flashcards?", len(m.flashcards)))
+		info := infoStyle.Render("This will make all flashcards due for immediate review.")
+		options := helpStyle.Render("[y] yes  [n] no  [esc] cancel")
+		return fmt.Sprintf("%s\n\n%s\n\n%s\n\n%s\n\n%s", title, warning, info, options, helpBar)
+
 	case adminHelp:
 		title := titleStyle.Render("❓ Help")
 		helpText := `Navigation:
@@ -335,6 +357,7 @@ Actions:
   c           Create new flashcard
   e           Edit selected flashcard
   d           Delete selected flashcard
+  b           Bulk reset RevisitIn to 0 (all cards)
   r           Reload flashcards from database
   ?           Show this help
   q           Quit
@@ -471,6 +494,24 @@ func (m *AdminModel) reload() {
 		m.selected = 0
 		m.table.SetCursor(0)
 	}
+}
+
+// bulkResetRevisitIn resets RevisitIn to 0 for all flashcards
+func (m *AdminModel) bulkResetRevisitIn() {
+	count := 0
+	for _, fc := range m.flashcards {
+		fc.RevisitIn = 0
+		if err := m.storeRef.UpdateFlashcard(fc); err != nil {
+			m.errMsg = fmt.Sprintf("Error updating flashcard %d: %v", fc.ID, err)
+			m.view = adminList
+			return
+		}
+		count++
+	}
+	m.statusMsg = fmt.Sprintf("Reset RevisitIn to 0 for %d flashcards", count)
+	m.errMsg = ""
+	m.reload()
+	m.view = adminList
 }
 
 // cycleFocus switches focus Question -> Answer -> Revisit -> Question
