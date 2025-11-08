@@ -23,6 +23,7 @@ Designed for simplicity, privacy, and security. Runs entirely offline and stores
 
 ## Quick Start
 
+
 1. **Install Ollama Desktop:**
   - Download and install from [ollama.com](http://ollama.com/)
 
@@ -31,10 +32,9 @@ Designed for simplicity, privacy, and security. Runs entirely offline and stores
   ollama pull llama3.1
   ```
 
-3. **Download and set up(for MacBook M2, adjust as needed):**
+3. **Install CATV:**
   ```bash
-  curl -L https://github.com/luiz1361/catv/releases/latest/download/catv-darwin-arm64 -o catv
-  chmod +x catv && xattr -dr com.apple.quarantine catv
+  curl -fsSL https://github.com/luiz1361/catv/releases/latest/download/install.sh | bash
   ```
 
 4. **Generate flashcards from your markdown notes:**
