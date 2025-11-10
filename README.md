@@ -137,13 +137,7 @@ You can use the `--model` flag to specify the Ollama model for flashcard generat
 
 Below are some screenshots of CATV in action:
 
-![Screenshot 1](screenshots/1.png)
-
-![Screenshot 2](screenshots/2.png)
-
-![Screenshot 3](screenshots/3.png)
-
-![Screenshot 4](screenshots/4.png)
+![Review](screenshots/review.png)
 
 ## Contributing
 See [CONTRIBUTING.md](CONTRIBUTING.md).
