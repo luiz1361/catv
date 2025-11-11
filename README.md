@@ -80,7 +80,7 @@ Flashcard's database management with full CRUD (Create, Read, Update, Delete) ca
 
 **Launch admin mode:**
 ```bash
-./catv admin
+catv admin
 ```
 **Use Cases:**
 - Manually create flashcards without generating from markdown
