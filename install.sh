@@ -36,12 +36,20 @@ detect_os_arch
 BINARY_URL="https://github.com/luiz1361/catv/releases/latest/download/catv-${OS_NAME}-${ARCH_NAME}"
 
 # Download binary
-curl -L "$BINARY_URL" -o catv
-chmod +x catv
+curl -fsSL "$BINARY_URL" -o catv && chmod +x catv
 
 # macOS: remove quarantine attribute
 if [ "$OS_NAME" = "darwin" ]; then
     xattr -dr com.apple.quarantine catv || true
 fi
 
-echo "catv installed! Run ./catv --help for usage."
+# Prompt user to add the binary to PATH with copy/paste commands
+cat <<'INFO'
+
+Installation complete.
+
+To use "catv" from anywhere, move the downloaded binary into a directory that's in your PATH.
+
+For example, you can run the following command:
+  sudo mv ./catv /usr/local/bin/
+INFO

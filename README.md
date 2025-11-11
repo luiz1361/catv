@@ -44,29 +44,33 @@ Designed for simplicity, privacy, and security. Runs entirely offline and stores
 
 3. **Install CATV:**
   
-  **Option A: Using the install script**
+  > [!TIP]
+  > Recommended: Use Option A (Homebrew) — it automatically handles the PATH on macOS (Apple Silicon). If Homebrew is not installed, visit https://brew.sh for installation instructions.
+
+  **Option A: Using Homebrew (macOS Silicon only)**
+  ```bash
+  brew tap luiz1361/formulae
+  brew install catv
+  ```
+
+  **Option B: Using the install script**
   ```bash
   curl -fsSL https://raw.githubusercontent.com/luiz1361/catv/refs/heads/main/install.sh | bash
-  ```
-  
-  **Option B: Using Homebrew(Mac Silicon Only)**
-  ```bash
-  brew install luiz1361/catv/catv
   ```
 
 4. **Generate flashcards from your markdown notes**
 
   ```bash
   # From a directory (recursive)
-  ./catv generate --path /path/to/notes
+  catv generate --path /path/to/notes
 
   # From a single file
-  ./catv generate --path /path/to/notes/file.md
+  catv generate --path /path/to/notes/file.md
   ```
 
 5. **Review your flashcards:**
   ```bash
-  ./catv
+  catv
   ```
 
 That's it! No extra configuration needed. It will use the local Ollama API and store flashcards in a SQLite database.
