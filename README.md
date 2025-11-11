@@ -43,17 +43,16 @@ Designed for simplicity, privacy, and security. Runs entirely offline and stores
   ```
 
 3. **Install CATV:**
-  
-  > [!TIP]
-  > Recommended: Use Option A (Homebrew) — it automatically handles the PATH on macOS (Apple Silicon). If Homebrew is not installed, visit https://brew.sh for installation instructions.
 
-  **Option A: Using Homebrew (macOS Silicon only)**
+  * **Option A: Using Homebrew (Recommended)**  
   ```bash
   brew tap luiz1361/formulae
   brew install catv
-  ```
+  ```  
+  > [!TIP]  
+  > This is the easiest way—it sets up everything automatically eg. PATH, upgrades, etc. If you don't have Homebrew, install it first from [brew.sh](https://brew.sh).
 
-  **Option B: Using the install script**
+  * **Option B: Using the install script**  
   ```bash
   curl -fsSL https://raw.githubusercontent.com/luiz1361/catv/refs/heads/main/install.sh | bash
   ```

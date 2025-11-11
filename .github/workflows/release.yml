@@ -214,9 +214,17 @@ jobs:
           curl -L -o catv-darwin-arm64 \
             "https://github.com/luiz1361/catv/releases/download/${VERSION}/catv-darwin-arm64"
           
-          SHA256=$(sha256sum catv-darwin-arm64 | awk '{print $1}')
-          echo "sha256=$SHA256" >> $GITHUB_OUTPUT
-          echo "Darwin ARM64 SHA256: $SHA256"
+          SHA256_ARM64=$(sha256sum catv-darwin-arm64 | awk '{print $1}')
+          echo "sha256_arm64=$SHA256_ARM64" >> $GITHUB_OUTPUT
+          echo "Darwin ARM64 SHA256: $SHA256_ARM64"
+          
+          # Download the darwin-amd64 binary to calculate SHA256
+          curl -L -o catv-darwin-amd64 \
+            "https://github.com/luiz1361/catv/releases/download/${VERSION}/catv-darwin-amd64"
+          
+          SHA256_AMD64=$(sha256sum catv-darwin-amd64 | awk '{print $1}')
+          echo "sha256_amd64=$SHA256_AMD64" >> $GITHUB_OUTPUT
+          echo "Darwin AMD64 SHA256: $SHA256_AMD64"
 
       - name: Checkout Homebrew tap
         uses: actions/checkout@v5
@@ -228,13 +236,18 @@ jobs:
       - name: Update formula
         run: |
           VERSION="${{ steps.release_info.outputs.version }}"
-          SHA256="${{ steps.release_info.outputs.sha256 }}"
+          SHA256_ARM64="${{ steps.release_info.outputs.sha256_arm64 }}"
+          SHA256_AMD64="${{ steps.release_info.outputs.sha256_amd64 }}"
           cd homebrew-formulae
 
-          # Update the formula
+          # Update the version
           sed -i "s/version \".*\"/version \"$VERSION\"/" catv.rb
-          sed -i "s|url \".*\"|url \"https://github.com/luiz1361/catv/releases/download/$VERSION/catv-darwin-arm64\"|" catv.rb
-          sed -i "s/sha256 \".*\"/sha256 \"$SHA256\"/" catv.rb
+          
+          # Remove the old sha256 line
+          sed -i '/^sha256 /d' catv.rb
+          
+          # Replace the url line with conditional block for both architectures
+          sed -i "s|^url .*|if Hardware::CPU.arm?\\n  url \"https://github.com/luiz1361/catv/releases/download/$VERSION/catv-darwin-arm64\"\\n  sha256 \"$SHA256_ARM64\"\\nelse\\n  url \"https://github.com/luiz1361/catv/releases/download/$VERSION/catv-darwin-amd64\"\\n  sha256 \"$SHA256_AMD64\"\\nend|" catv.rb
           
           # Show the changes
           cat catv.rb
@@ -247,3 +260,4 @@ jobs:
           git add catv.rb
           git commit -m "Update catv to ${{ steps.release_info.outputs.version }}" || exit 0
           git push
+
