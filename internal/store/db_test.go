@@ -382,3 +382,65 @@ func setupTestDB(t *testing.T) *Store {
 
 	return store
 }
+
+func TestNewStore_ErrorHandling(t *testing.T) {
+	// Test with invalid path (e.g., directory that doesn't exist and can't be created)
+	invalidPath := "/invalid/path/that/does/not/exist/test.db"
+	store, err := NewStore(invalidPath)
+
+	// On some systems, this might succeed if the directory can be created
+	// or fail if it can't. Either way, we should handle it gracefully.
+	if err != nil {
+		// Expected error for invalid path
+		if store != nil {
+			t.Error("NewStore() should return nil store on error")
+		}
+	} else {
+		// If it succeeded, clean up
+		if store != nil {
+			store.Close()
+		}
+	}
+}
+
+func TestGetFlashcardsForReview_EmptyDatabase(t *testing.T) {
+	store := setupTestDB(t)
+	defer store.Close()
+
+	cards, err := store.GetFlashcardsForReview()
+	if err != nil {
+		t.Fatalf("GetFlashcardsForReview() error = %v", err)
+	}
+
+	if len(cards) != 0 {
+		t.Errorf("Expected 0 flashcards in empty database, got %d", len(cards))
+	}
+}
+
+func TestGetUniqueFiles_EmptyDatabase(t *testing.T) {
+	store := setupTestDB(t)
+	defer store.Close()
+
+	files, err := store.GetUniqueFiles()
+	if err != nil {
+		t.Fatalf("GetUniqueFiles() error = %v", err)
+	}
+
+	if len(files) != 0 {
+		t.Errorf("Expected 0 files in empty database, got %d", len(files))
+	}
+}
+
+func TestGetAllFlashcards_EmptyDatabase(t *testing.T) {
+	store := setupTestDB(t)
+	defer store.Close()
+
+	cards, err := store.GetAllFlashcards()
+	if err != nil {
+		t.Fatalf("GetAllFlashcards() error = %v", err)
+	}
+
+	if len(cards) != 0 {
+		t.Errorf("Expected 0 flashcards in empty database, got %d", len(cards))
+	}
+}
