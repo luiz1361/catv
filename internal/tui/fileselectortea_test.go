@@ -114,11 +114,12 @@ func TestFileSelectorModel_Update_Navigation(t *testing.T) {
 			m.cursor = tt.initialCursor
 
 			msg := tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune{}, Alt: false}
-			if tt.key == keys.Up {
+			switch tt.key {
+			case keys.Up:
 				msg.Type = tea.KeyUp
-			} else if tt.key == keys.Down {
+			case keys.Down:
 				msg.Type = tea.KeyDown
-			} else {
+			default:
 				msg.Runes = []rune(tt.key)
 			}
 
