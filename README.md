@@ -147,3 +147,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 See [LICENSE](LICENSE).
+
+## Stars
+## Star History
+[![Star History Chart](https://api.star-history.com/svg?repos=luiz1361/catv&type=date&legend=top-left)](https://www.star-history.com/#luiz1361/catv&type=date&legend=top-left)
